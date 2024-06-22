@@ -32,6 +32,9 @@
     <Image Include="textures\container.jpg">
       <Filter>Archivos de origen\textures</Filter>
     </Image>
+    <Image Include="textures\cuadradoPatron.jpg">
+      <Filter>Archivos de origen\textures</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\shader_exercise8.fs">

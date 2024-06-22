@@ -137,6 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\container.jpg" />
+    <Image Include="textures\cuadradoPatron.jpg" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\shader_exercise8.fs" />

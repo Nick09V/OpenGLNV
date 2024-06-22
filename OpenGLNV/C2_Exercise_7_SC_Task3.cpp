@@ -210,13 +210,13 @@ int main()
         // Vértice 0
         -0.95f, -0.15f, 0.0f,  // Posición
         1.0f, 0.0f, 0.0f,      // Color (rojo)
-		0.25, 4.25, //coordenadas de textura
+		//0.25, 4.25, //coordenadas de textura
 
 
         // Vértice 1
         -0.56f, -0.15f, 0.0f,  // Posición
         0.0f, 1.0f, 0.0f,      // Color (verde)
-		0.2, 4.25, //coordenadas de textura
+		//0.2, 4.25, //coordenadas de textura
 
         // Vértice 2
         -0.40f, 0.0f, 0.0f,    // Posición
@@ -294,8 +294,10 @@ int main()
 
         6,10,7,
 
+        
+        8,9,10,
 
-        8,9,10
+        10,9,1
         // Triángulo 2
         // Completar...
     };
@@ -313,14 +315,14 @@ int main()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     // color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
+	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	//glEnableVertexAttribArray(2);
 
     // variables para el desplazamiento
     float xOffset = 0.0f;
@@ -343,7 +345,6 @@ int main()
     // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
     //unsigned char* data = stbi_load(FileSystem::getPath("textures/container.jpg").c_str(), &width, &height, &nrChannels, 0);
     unsigned char* data = stbi_load("textures/container.jpg", &width, &height, &nrChannels, 0);
-
     if (data)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -355,10 +356,41 @@ int main()
     }
     stbi_image_free(data);
 
+
+    //Cargar textura 2
+    // load and create a texture
+        // -------------------------
+    unsigned int texture2;
+    glGenTextures(1, &texture2);
+    glBindTexture(GL_TEXTURE_2D, texture2); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
+    // set the texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // load image, create texture and generate mipmaps
+    int width2, height2, nrChannels2;
+    // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
+    //unsigned char* data = stbi_load(FileSystem::getPath("textures/container.jpg").c_str(), &width, &height, &nrChannels, 0);
+    unsigned char* data2 = stbi_load("textures/cuadradoPatron.jpg", &width2, &height2, &nrChannels2, 0);
+
+    if (data2)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width2, height2, 0, GL_RGB, GL_UNSIGNED_BYTE, data2);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+    stbi_image_free(data2);
+
     // Activar el shader y establecer el uniforme de la textura
     ourShader.use();
     ourShader.setInt("texture1", 0); // 0 es la unidad de textura
-
+    ourShader.setInt("texture2", 1); // 0 es la unidad de textura
     float cambioColor = 0.5f;
     // render loop
     while (!glfwWindowShouldClose(window))
@@ -389,7 +421,7 @@ int main()
         glBindVertexArray(VAO);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 15, GL_UNSIGNED_INT, 0);
         //glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
