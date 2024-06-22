@@ -24,7 +24,7 @@
     <ClCompile Include="..\OpenGL_Stuff\Library\glad.c">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="C2_Exercise_7_SC_Task3.cpp">
+    <ClCompile Include="tareas\Tarea_B2T1.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>
@@ -35,12 +35,21 @@
     <Image Include="textures\cuadradoPatron.jpg">
       <Filter>Archivos de origen\textures</Filter>
     </Image>
+    <Image Include="textures\awesomeface.png">
+      <Filter>Archivos de origen\textures</Filter>
+    </Image>
+    <Image Include="textures\geo.png">
+      <Filter>Archivos de origen\textures</Filter>
+    </Image>
+    <Image Include="textures\flor.jpg">
+      <Filter>Archivos de origen\textures</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\shader_exercise8.fs">
+    <None Include="shaders\tareaB2_T1.fs">
       <Filter>Archivos de origen\shaders</Filter>
     </None>
-    <None Include="shaders\shader_exercise8.vs">
+    <None Include="shaders\tareaB2_T1.vs">
       <Filter>Archivos de origen\shaders</Filter>
     </None>
   </ItemGroup>

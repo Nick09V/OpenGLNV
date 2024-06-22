@@ -8,7 +8,8 @@
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
+void processInput(GLFWwindow* window, float& xOffset, float& yOffset);
+
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -49,27 +50,10 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader ourShader("shaders/shader_exercise9.vs", "shaders/shader_exercise9.fs");
+    Shader ourShader("shaders/tareaB2_T1.vs", "shaders/tareaB2_T1.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
-    float vertices2[] = {
-        // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   
-         //1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   
-         //1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   
-        //0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   
-        //0.0f, 1.0f  // top left 
-    };
-    unsigned int indices2[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
-    };
-
-
 
 
     float vertices[] = {
@@ -157,12 +141,12 @@ int main()
 
         8,9,10,
 
-        10,9,1
-        // Triángulo 2
-        // Completar...
+		10,9,11,
     };
 
 
+    float numIndices = sizeof(indices) / sizeof(indices[0]);
+    std::cout << "Número de índices: " << numIndices << std::endl;
 
 
     unsigned int VBO, VAO, EBO;
@@ -206,7 +190,7 @@ int main()
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
     // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-    unsigned char* data = stbi_load("textures/container.jpg", &width, &height, &nrChannels, 0);
+    unsigned char* data = stbi_load("textures/flor.jpg", &width, &height, &nrChannels, 0);
     if (data)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -251,16 +235,17 @@ int main()
 
 
 
+    // variables para el desplazamiento
+    float xOffset = 0.0f;
+    float yOffset = 0.0f;
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
     {
-        // input
-        // -----
-        processInput(window);
+        // Input
+        processInput(window, xOffset, yOffset);
 
         // render
-        // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -270,35 +255,45 @@ int main()
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
 
+
+        //mover la figura
+        ourShader.setFloat("xOffset", xOffset);
+        ourShader.setFloat("yOffset", yOffset);
+
         // render container
         ourShader.use();
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 15, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:
-    // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
-    // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window)
+void processInput(GLFWwindow* window, float& xOffset, float& yOffset)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        yOffset += 0.0005f; // Incrementar el desplazamiento en el eje Y
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        yOffset -= 0.0005f; // Disminuir el desplazamiento en el eje Y
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        xOffset -= 0.0005f; // Disminuir el desplazamiento en el eje X
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        xOffset += 0.0005f; // Incrementar el desplazamiento en el eje X
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
