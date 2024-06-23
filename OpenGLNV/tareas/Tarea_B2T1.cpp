@@ -1,15 +1,14 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <learnopengl/shader_s.h>
-
+#include <chrono>
 #define STB_IMAGE_IMPLEMENTATION 
 #include <image/stb_image.h>
 
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window, float& xOffset, float& yOffset);
-
+void processInput(GLFWwindow* window, float& xOffset, float& yOffset, float& valorTextura);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -50,7 +49,7 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader ourShader("shaders/tareaB2_T1.vs", "shaders/tareaB2_T1.fs");
+    Shader ourShader("shaders/vertexshader.vs", "shaders/fragmentShader.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -130,22 +129,23 @@ int main()
 
         2,3,4,
 
-        4,11,12,
-
-        5,11,10,
-        5,6,10,
-
-
-        6,10,7,
-
-
-        8,9,10,
-
-		10,9,11,
     };
 
 
+    unsigned int indices2[] = {
+
+		4,11,12,
+
+		5,6,10,
+		5,10,11,
+
+		6,7,10,
+
+		8,9,10,
+	};
+
     float numIndices = sizeof(indices) / sizeof(indices[0]);
+    float numIndices2 = sizeof(indices2) / sizeof(indices2[0]);
     std::cout << "Número de índices: " << numIndices << std::endl;
 
 
@@ -168,9 +168,42 @@ int main()
     // color attribute
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-    // texture coord attribute
-    //glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    //glEnableVertexAttribArray(2);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+                                        //PARA LA FIGURA DOS
+
+    unsigned int VAO2, VBO2, EBO2;
+
+    // Generar VAO, VBO y EBO
+    glGenVertexArrays(1, &VAO2);
+    glGenBuffers(1, &VBO2);
+    glGenBuffers(1, &EBO2);
+
+    // Vincular VAO
+    glBindVertexArray(VAO2);
+
+    // Vincular VBO para los datos de vértices (posiciones, colores, etc.)
+    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // Vincular EBO para los índices
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices2), indices2, GL_STATIC_DRAW);
+
+    // position attribut
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    // color attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+
+
 
 
     // load and create a texture 
@@ -190,7 +223,7 @@ int main()
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
     // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-    unsigned char* data = stbi_load("textures/flor.jpg", &width, &height, &nrChannels, 0);
+    unsigned char* data = stbi_load("textures/texture1.jpg", &width, &height, &nrChannels, 0);
     if (data)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -212,11 +245,11 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load image, create texture and generate mipmaps
-    data = stbi_load("textures/awesomeface.png", &width, &height, &nrChannels, 0);
+    data = stbi_load("textures/texture2.jpg", &width, &height, &nrChannels, 0);
     if (data)
     {
         // note that the awesomeface.png has transparency and thus an alpha channel, so make sure to tell OpenGL the data type is of GL_RGBA
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
@@ -238,13 +271,16 @@ int main()
     // variables para el desplazamiento
     float xOffset = 0.0f;
     float yOffset = 0.0f;
+	float valorTextura = 1.0f;
+    int textura = 1;
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+        
         // Input
-        processInput(window, xOffset, yOffset);
-
+        processInput(window, xOffset, yOffset, valorTextura);
+        float time = glfwGetTime();
         // render
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -254,26 +290,50 @@ int main()
         glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
-
-
-        //mover la figura
-        ourShader.setFloat("xOffset", xOffset);
-        ourShader.setFloat("yOffset", yOffset);
-
-        // render container
         ourShader.use();
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
+        // mover la figura
+        ourShader.setFloat("xOffset", xOffset);
+        ourShader.setFloat("yOffset", yOffset); 
+        ourShader.setFloat("time", time);
+
+
+		if (valorTextura == 1.0f)
+        {
+            // render Figura 1
+			textura = 0;
+			ourShader.setInt("textura", textura);
+            glBindVertexArray(VAO);
+            glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
+
+            // render Figura 2
+            textura = 1;
+            ourShader.setInt("textura", textura);
+            glBindVertexArray(VAO2);
+            glDrawElements(GL_TRIANGLES, numIndices2, GL_UNSIGNED_INT, 0);
+		}
+        else
+        {
+            // render Figura 1
+            textura = 1;
+            ourShader.setInt("textura", textura);
+            glBindVertexArray(VAO);
+            glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
+
+            // render Figura 2
+            textura = 0;
+            ourShader.setInt("textura", textura);
+            glBindVertexArray(VAO2);
+            glDrawElements(GL_TRIANGLES, numIndices2, GL_UNSIGNED_INT, 0);
+		}
+        //std::cout << "Valor Textura" << textura << std::endl;
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    // optional: de-allocate all resources once they've outlived their purpose:
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
+
+
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     glfwTerminate();
@@ -281,19 +341,25 @@ int main()
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-void processInput(GLFWwindow* window, float& xOffset, float& yOffset)
+void processInput(GLFWwindow* window, float& xOffset, float& yOffset, float& valorTextura)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    /*if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         yOffset += 0.0005f; // Incrementar el desplazamiento en el eje Y
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         yOffset -= 0.0005f; // Disminuir el desplazamiento en el eje Y
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         xOffset -= 0.0005f; // Disminuir el desplazamiento en el eje X
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        xOffset += 0.0005f; // Incrementar el desplazamiento en el eje X
+        xOffset += 0.0005f; // Incrementar el desplazamiento en el eje X*/
+    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
+        valorTextura = 1.0f; // Cambiar textura J
+    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+        valorTextura = 0.0f; // Cambiar textura K
+    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+        valorTextura = 0.0f; // comenzar a que funcione con el tiempo
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
