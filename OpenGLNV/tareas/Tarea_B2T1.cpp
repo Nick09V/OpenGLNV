@@ -135,24 +135,21 @@ int main()
 
         2,3,4,
 
+        //FIGURA 2
+        4,11,12,
+
+        5,6,10,
+        5,10,11,
+
+        6,7,10,
+
+        8,9,10,
     };
 
 
-    unsigned int indices2[] = {
-
-		4,11,12,
-
-		5,6,10,
-		5,10,11,
-
-		6,7,10,
-
-		8,9,10,
-	};
-
-    float numIndices = sizeof(indices) / sizeof(indices[0]);
-    float numIndices2 = sizeof(indices2) / sizeof(indices2[0]);
-    std::cout << "Número de índices: " << numIndices << std::endl;
+    unsigned int numIndices = 12;
+    unsigned int numIndices2 = 15;
+    //std::cout << "Número de índices: " << numIndices << std::endl;
 
 
     unsigned int VBO, VAO, EBO;
@@ -177,39 +174,6 @@ int main()
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-
-                                        //PARA LA FIGURA DOS
-
-    unsigned int VAO2, VBO2, EBO2;
-
-    // Generar VAO, VBO y EBO
-    glGenVertexArrays(1, &VAO2);
-    glGenBuffers(1, &VBO2);
-    glGenBuffers(1, &EBO2);
-
-    // Vincular VAO
-    glBindVertexArray(VAO2);
-
-    // Vincular VBO para los datos de vértices (posiciones, colores, etc.)
-    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // Vincular EBO para los índices
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices2), indices2, GL_STATIC_DRAW);
-
-    // position attribut
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
-
-
 
 
     // load and create a texture 
@@ -314,8 +278,8 @@ int main()
             // render Figura 2
             textura = 1;
             ourShader.setInt("textura", textura);
-            glBindVertexArray(VAO2);
-            glDrawElements(GL_TRIANGLES, numIndices2, GL_UNSIGNED_INT, 0);
+           // glBindVertexArray(VAO2);
+            glDrawElements(GL_TRIANGLES, numIndices2, GL_UNSIGNED_INT, (void*)(numIndices * sizeof(unsigned int)));
 		}
         else
         {
@@ -328,8 +292,8 @@ int main()
             // render Figura 2
             textura = 0;
             ourShader.setInt("textura", textura);
-            glBindVertexArray(VAO2);
-            glDrawElements(GL_TRIANGLES, numIndices2, GL_UNSIGNED_INT, 0);
+            //glBindVertexArray(VAO2);
+            glDrawElements(GL_TRIANGLES, numIndices2, GL_UNSIGNED_INT, (void*)(numIndices * sizeof(unsigned int)));
 		}
         //std::cout << "Valor Textura" << textura << std::endl;
 
