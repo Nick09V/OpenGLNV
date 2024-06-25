@@ -136,12 +136,12 @@
     <ClCompile Include="tareas\Tarea_B2T1.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\fragmentshader.fs" />
-    <None Include="shaders\vertexshader.vs" />
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="textures\texture1.jpg" />
     <Image Include="textures\texture2.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\fragmentshader.fs" />
+    <None Include="shaders\vertexshader.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

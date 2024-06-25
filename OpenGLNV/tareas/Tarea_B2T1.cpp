@@ -9,6 +9,12 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window, float& xOffset, float& yOffset, float& valorTextura);
+/*
+* Nombre: Nick Valverde
+* Fecha: 23/6/2024
+* Código unico: 202120523
+*/
+
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -356,7 +362,7 @@ void processInput(GLFWwindow* window, float& xOffset, float& yOffset, float& val
         xOffset += 0.0005f; // Incrementar el desplazamiento en el eje X*/
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
         valorTextura = 1.0f; // Cambiar textura J
-    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) 
         valorTextura = 0.0f; // Cambiar textura K
     if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
         valorTextura = 0.0f; // comenzar a que funcione con el tiempo
