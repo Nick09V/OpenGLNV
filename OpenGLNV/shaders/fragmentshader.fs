@@ -10,10 +10,7 @@ uniform sampler2D texture2;
 uniform int textura;
 void main()
 {
-    if(textura == 1){
-        FragColor = texture(texture1, TexCoord);
-    }else{
+
         FragColor = texture(texture2, TexCoord);
-    }
 
 }

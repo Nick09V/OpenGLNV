@@ -133,7 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\OpenGL_Stuff\Library\glad.c" />
-    <ClCompile Include="tareas\Tarea_B2T1.cpp" />
+    <ClCompile Include="tareas\Tarea_B2T2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\texture1.jpg" />
