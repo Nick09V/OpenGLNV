@@ -251,6 +251,10 @@ int main()
 	float escala = 1.0f;
     glm::mat4 transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 
+
+    std::cout << "Rotar: J aumenta y K disminuye" << std::endl;
+    std::cout << "Trasladar: WASD aumenta con el tiempo" << std::endl;
+    std::cout << "Escalar: Y aumenta y H disminuye" << std::endl;
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -276,10 +280,9 @@ int main()
 
 		incrementoTraslacion = incrementoTraslacion + xOffset;
 		incrementoTraslacionY = incrementoTraslacionY + yOffset;
-        std::cout << "Incremento de Traslación: " << incrementoTraslacion << "          Y:" << incrementoTraslacionY << std::endl;
-        // create transformations
-		transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first|
+        transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first|
 
+        // create transformations
         transform = glm::translate(transform, glm::vec3(incrementoTraslacion, incrementoTraslacionY, 0.0f));
         transform = glm::rotate(transform, rotar, glm::vec3(0.0f, 0.0f, 1.0f));
         transform = glm::scale(transform, glm::vec3(escala, escala, escala));
@@ -323,13 +326,13 @@ void processInput(GLFWwindow* window, float& xOffset, float& yOffset, float& rot
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        yOffset += 0.000005f; // Incrementar el desplazamiento en el eje Y
+        yOffset += 0.0000005f; // Incrementar el desplazamiento en el eje Y
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        yOffset -= 0.000005f; // Disminuir el desplazamiento en el eje Y
+        yOffset -= 0.0000005f; // Disminuir el desplazamiento en el eje Y
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        xOffset -= 0.000005f; // Disminuir el desplazamiento en el eje X
+        xOffset -= 0.0000005f; // Disminuir el desplazamiento en el eje X
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        xOffset += 0.000005f; // Incrementar el desplazamiento en el eje X
+        xOffset += 0.0000005f; // Incrementar el desplazamiento en el eje X
     if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) 
         rotar += 0.0005f; // Cambiar rotar K
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
