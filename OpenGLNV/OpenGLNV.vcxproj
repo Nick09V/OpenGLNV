@@ -133,15 +133,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\OpenGL_Stuff\Library\glad.c" />
-    <ClCompile Include="tareas\Tarea_B2T2.cpp" />
+    <ClCompile Include="tareas\B2T3_Valverde_Nick.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="textures\awesomeface.png" />
+    <Image Include="textures\container.jpg" />
     <Image Include="textures\texture1.jpg" />
-    <Image Include="textures\texture2.jpg" />
+    <Image Include="textures\Texture2.png" />
+    <Image Include="textures\Texture2OK.png" />
+    <Image Include="textures\Texture3.png" />
+    <Image Include="textures\Texture7.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\fragmentshader.fs" />
-    <None Include="shaders\vertexshader.vs" />
+    <ClInclude Include="..\OpenGL_Stuff\incluide\learnopengl\camera.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\shader_B2T2.fs" />
+    <None Include="shaders\shader_B2T2.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
