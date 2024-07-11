@@ -41,13 +41,16 @@
     <Image Include="textures\container.jpg">
       <Filter>Archivos de origen\textures</Filter>
     </Image>
-    <Image Include="textures\Texture2.png">
-      <Filter>Archivos de origen\textures</Filter>
-    </Image>
     <Image Include="textures\Texture7.png">
       <Filter>Archivos de origen\textures</Filter>
     </Image>
-    <Image Include="textures\Texture2OK.png">
+    <Image Include="textures\Texture3OK.png">
+      <Filter>Archivos de origen\textures</Filter>
+    </Image>
+    <Image Include="textures\Texture4.png">
+      <Filter>Archivos de origen\textures</Filter>
+    </Image>
+    <Image Include="textures\Texture2.png">
       <Filter>Archivos de origen\textures</Filter>
     </Image>
     <Image Include="textures\Texture3.png">
@@ -60,10 +63,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\shader_B2T2.fs">
+    <None Include="shaders\shader_B2T3.fs">
       <Filter>Archivos de origen\shaders</Filter>
     </None>
-    <None Include="shaders\shader_B2T2.vs">
+    <None Include="shaders\shader_B2T3.vs">
       <Filter>Archivos de origen\shaders</Filter>
     </None>
   </ItemGroup>

@@ -13,13 +13,13 @@ uniform int variable;
 void main()
 {
 
-    if(varriable == 1){
+    if(variable == 3){
         FragColor = texture(texture1, TexCoord);
     }
-    else if(varriable == 2){
+    else if(variable == 1){
         FragColor = texture(texture2, TexCoord);
     }
-    else if(varriable == 3){
+    else if(variable == 2){
         FragColor = texture(texture3, TexCoord);
     }
     else{

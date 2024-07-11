@@ -14,6 +14,14 @@
 
 #include <iostream>
 
+/*
+* Nombre: Nick Valverde
+* Fecha de entrega: 10/7/2024
+* Tarea: B2T3
+*
+*/
+
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -49,7 +57,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "B2T3", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Nick Valverde - 1726431164 - B2T3", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -81,7 +89,7 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader ourShader("shaders/shader_B2T2.vs", "shaders/shader_B2T2.fs");
+    Shader ourShader("shaders/shader_B2T3.vs", "shaders/shader_B2T3.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -214,7 +222,7 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load image, create texture and generate mipmaps
-    data = stbi_load("textures/Texture2OK.png", &width, &height, &nrChannels, 0);    if (data)
+    data = stbi_load("textures/Texture2.png", &width, &height, &nrChannels, 0);    if (data)
     if (data)
     {
         // note that the awesomeface.png has transparency and thus an alpha channel, so make sure to tell OpenGL the data type is of GL_RGBA
@@ -258,7 +266,9 @@ int main()
     ourShader.setInt("texture2", 1);
     ourShader.setInt("texture3", 2);
    
-
+    int variable = 1;
+	float rotationSpeed = 20.0f; // velocidad de rotación
+    float radioGiro = 10.0f;
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -307,37 +317,39 @@ int main()
         glBindVertexArray(VAO);
 
 
-        for (unsigned int i = 0; i < 10; i++)
+        for (unsigned int i = 0; i < 12; i++)
         {
             // calculate the model matrix for each object and pass it to shader before drawing
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * i;
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            ourShader.setMat4("model", model);
             
+            
+			if (i == 2 || i == 4) {
+				ourShader.setInt("variable", 1);
 
+                std::cout << "Current file: " << currentFrame << std::endl;
+                model = glm::rotate(model, glm::radians(currentFrame * rotationSpeed), glm::vec3(1.0f, 0.3f, 0.5f));
+			}
+            else {
+                if (i == 3 || i == 8 || i == 10) {
+                    ourShader.setInt("variable", 2);
+                    model = glm::scale(model, glm::vec3(0.5f * sin(currentFrame)));
+				}
+				else {
 
+                    model = glm::translate(model, glm::vec3(radioGiro * cos(currentFrame), 0.0f, radioGiro * sin(currentFrame)));
+					ourShader.setInt("variable", 3);
+				}
+
+            }
+            ourShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
+
         }
 
-        //Exercise 11 Task 5
-        /*for (unsigned int i = 0; i < 10; i++)
-        {
-            // calculate the model matrix for each object and pass it to shader before drawing
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cubePositions[i]);
-            float angle = 20.0f * i;
-            if (i % 3 == 0)  // every 3rd iteration (including the first) we set the angle using GLFW's time function.
-                angle = glfwGetTime() * 25.0f;
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            ourShader.setMat4("model", model);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }*/
-
-
-
+        
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
