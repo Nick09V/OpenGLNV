@@ -133,7 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\OpenGL_Stuff\Library\glad.c" />
-    <ClCompile Include="C3_Exercise_15_LCaster_Task5.cpp" />
+    <ClCompile Include="TareaB2T4_Valverde_Nick.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\OpenGL_Stuff\incluide\learnopengl\camera.h" />
@@ -151,6 +151,7 @@
     <Image Include="textures\container2_specular.png" />
     <Image Include="textures\matrix.jpg" />
     <Image Include="textures\Texture7.png" />
+    <Image Include="textures\Texture7_specular.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

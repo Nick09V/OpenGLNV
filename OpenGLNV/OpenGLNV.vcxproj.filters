@@ -27,7 +27,7 @@
     <ClCompile Include="..\OpenGL_Stuff\Library\glad.c">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="C3_Exercise_15_LCaster_Task5.cpp">
+    <ClCompile Include="TareaB2T4_Valverde_Nick.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>
@@ -67,6 +67,9 @@
       <Filter>Archivos de origen\textures</Filter>
     </Image>
     <Image Include="textures\Texture7.png">
+      <Filter>Archivos de origen\textures</Filter>
+    </Image>
+    <Image Include="textures\Texture7_specular.png">
       <Filter>Archivos de origen\textures</Filter>
     </Image>
   </ItemGroup>

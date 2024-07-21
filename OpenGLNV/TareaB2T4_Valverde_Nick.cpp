@@ -13,6 +13,11 @@
 
 #include <iostream>
 
+/*
+Nombre: Nick Valverde
+Fecha de entrega: 21/7/2024
+Código único: 202120523*/
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -52,7 +57,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Exercise 15 Task 5", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "TareaB2T4", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -236,7 +241,7 @@ glm::vec3 cubePositions[] = {
  // load textures (we now use a utility function to keep the code more organized)
     // -----------------------------------------------------------------------------
     unsigned int diffuseMap = loadTexture("textures/Texture7.png");
-	unsigned int specularMap = loadTexture("textures/container2_specular.png");
+	unsigned int specularMap = loadTexture("textures/Texture7_specular.png");
 	
     // shader configuration
     // --------------------
