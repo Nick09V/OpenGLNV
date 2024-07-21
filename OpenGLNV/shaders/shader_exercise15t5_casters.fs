@@ -16,11 +16,11 @@ struct DirLight {
 
 struct PointLight {
     vec3 position;
-    
+
     float constant;
     float linear;
     float quadratic;
-	
+
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -41,7 +41,7 @@ struct SpotLight {
     vec3 specular;       
 };
 
-#define NR_POINT_LIGHTS 4
+#define NR_POINT_LIGHTS 1
 
 in vec3 FragPos;
 in vec3 Normal;
@@ -78,7 +78,7 @@ void main()
     // phase 3: spot light
     result += CalcSpotLight(spotLight, norm, FragPos, viewDir);    
     
-    FragColor = vec4(result, 1.0);	
+    FragColor = vec4(result, 1.0);
 }
 
 // calculates the color when using a directional light.

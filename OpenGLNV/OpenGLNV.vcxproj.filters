@@ -66,5 +66,8 @@
     <Image Include="textures\matrix.jpg">
       <Filter>Archivos de origen\textures</Filter>
     </Image>
+    <Image Include="textures\Texture7.png">
+      <Filter>Archivos de origen\textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>

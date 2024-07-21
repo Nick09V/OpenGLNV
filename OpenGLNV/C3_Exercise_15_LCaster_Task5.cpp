@@ -16,7 +16,7 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void processInput(GLFWwindow *window);
+void processInput(GLFWwindow *window, int& xOffset);
 
 
 unsigned int loadTexture(const char *path);
@@ -88,49 +88,98 @@ int main()
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
 
- float vertices[] = {
+
+
+    float vertices[] = {
+        //CARA POSTERIOR
+    // positions            //NORMALES             // texture coords (reflejadas)
+    -0.5f, -0.5f, -0.5f,   0.0f,  0.0f, -1.0f,      348.05f / 1000.0f, 510.0f / 1000.0f, // (u1, v0)
+     0.5f, -0.5f, -0.5f,   0.0f,  0.0f, -1.0f,      144.0f / 1000.0f, 510.0f / 1000.0f,  // (u0, v1)
+     0.5f,  0.5f, -0.5f,   0.0f,  0.0f, -1.0f,      144.0f / 1000.0f, 682.0f / 1000.0f,  // (u0, v2)
+     0.5f,  0.5f, -0.5f,   0.0f,  0.0f, -1.0f,      144.0f / 1000.0f, 682.0f / 1000.0f,  // (u0, v2)
+    -0.5f,  0.5f, -0.5f,   0.0f,  0.0f, -1.0f,      348.05f / 1000.0f, 682.0f / 1000.0f, // (u1, v3)
+    -0.5f, -0.5f, -0.5f,   0.0f,  0.0f, -1.0f,      348.05f / 1000.0f, 510.0f / 1000.0f,  // (u1, v0)
+    // CARA DELANTERA                              
+    -0.5f, -0.5f,  0.5f,   0.0f,  0.0f,  1.0f,      552.00f / 1000.0f, 510.00f / 1000.0f,
+     0.5f, -0.5f,  0.5f,   0.0f,  0.0f,  1.0f,      757.0f / 1000.0f, 510.00f / 1000.0f,
+     0.5f,  0.5f,  0.5f,   0.0f,  0.0f,  1.0f,      757.0f / 1000.0f, 682.0f / 1000.0f,
+     0.5f,  0.5f,  0.5f,   0.0f,  0.0f,  1.0f,      757.0f / 1000.0f, 682.0f / 1000.0f,
+    -0.5f,  0.5f,  0.5f,   0.0f,  0.0f,  1.0f,      552.00f / 1000.0f, 682.0f / 1000.0f,
+    -0.5f, -0.5f,  0.5f,   0.0f,  0.0f,  1.0f,      552.00f / 1000.0f, 510.00f / 1000.0f,
+    //CARA IZQUIERDA DEL      ANTERA
+    -0.5f,  0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,     552.00f / 1000.0f, 682.0f / 1000.0f,  // (u2, v2)
+    -0.5f,  0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,     348.05f / 1000.0f, 682.0f / 1000.0f,  // (u3, v3)
+    -0.5f, -0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,     348.05f / 1000.0f, 510.0f / 1000.0f,  // (u0, v0)
+    -0.5f, -0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,     348.05f / 1000.0f, 510.0f / 1000.0f,  // (u0, v0)
+    -0.5f, -0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,     552.00f / 1000.0f, 510.00f / 1000.0f, // (u1, v1)
+    -0.5f,  0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,     552.00f / 1000.0f, 682.0f / 1000.0f,  // (u2, v2)
+    //CARA DERECHA DELAN      TERA
+     0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,     757.0f / 1000.0f, 682.0f / 1000.0f,
+     0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,     961.0f / 1000.0f, 682.0f / 1000.0f, // (u2, v2)
+     0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,     961.0f / 1000.0f, 510.00f / 1000.0f,  // (u0, v0)
+     0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,     961.0f / 1000.0f, 510.00f / 1000.0f,  // (u0, v0)
+     0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,     757.0f / 1000.0f, 510.00f / 1000.0f,
+     0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,     757.0f / 1000.0f, 682.0f / 1000.0f,
+     //CARA INFERIOR          
+    -0.5f, -0.5f, -0.5f,   0.0f, -1.0f,  0.0f,      552.00f / 1000.0f,295.0f / 1000.0f,
+     0.5f, -0.5f, -0.5f,   0.0f, -1.0f,  0.0f,      757.0f / 1000.0f, 295.0f / 1000.0f,
+     0.5f, -0.5f,  0.5f,   0.0f, -1.0f,  0.0f,      757.0f / 1000.0f, 510.00f / 1000.0f,
+     0.5f, -0.5f,  0.5f,   0.0f, -1.0f,  0.0f,      757.0f / 1000.0f, 510.00f / 1000.0f,
+    -0.5f, -0.5f,  0.5f,   0.0f, -1.0f,  0.0f,      552.00f / 1000.0f, 510.00f / 1000.0f,
+    -0.5f, -0.5f, -0.5f,   0.0f, -1.0f,  0.0f,      552.00f / 1000.0f, 295.0f / 1000.0f,
+    //CARA SUPERIOR           
+    -0.5f,  0.5f, -0.5f,   0.0f,  1.0f,  0.0f,      552.00f / 1000.0f, 682.0f / 1000.0f,
+     0.5f,  0.5f, -0.5f,   0.0f,  1.0f,  0.0f,      757.0f / 1000.0f, 682.0f / 1000.0f,
+     0.5f,  0.5f,  0.5f,   0.0f,  1.0f,  0.0f,      757.0f / 1000.0f, 847.0f / 1000.0f,
+     0.5f,  0.5f,  0.5f,   0.0f,  1.0f,  0.0f,      757.0f / 1000.0f, 847.0f / 1000.0f,
+    -0.5f,  0.5f,  0.5f,   0.0f,  1.0f,  0.0f,      552.00f / 1000.0f, 847.0f / 1000.0f,
+    -0.5f,  0.5f, -0.5f,   0.0f,  1.0f,  0.0f,      552.00f / 1000.0f, 682.0f / 1000.0f
+    };
+                               
+                               
+ float vertices2[] = {
         // positions          // normals           // texture coords
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  348.05f / 1000.0f, 510.0f / 1000.0f, // (u1, v0)
+         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  144.0f / 1000.0f, 510.0f / 1000.0f,  // (u0, v1)
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  144.0f / 1000.0f, 682.0f / 1000.0f,  // (u0, v2)
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  144.0f / 1000.0f, 682.0f / 1000.0f,  // (u0, v2)
+        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  348.05f / 1000.0f, 682.0f / 1000.0f, // (u1, v3)
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  348.05f / 1000.0f, 510.0f / 1000.0f,  // (u1, v0)
 
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  552.00f / 1000.0f, 510.00f / 1000.0f,
+         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  757.0f / 1000.0f, 510.00f / 1000.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  757.0f / 1000.0f, 682.0f / 1000.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  757.0f / 1000.0f, 682.0f / 1000.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  552.00f / 1000.0f, 682.0f / 1000.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  552.00f / 1000.0f, 510.00f / 1000.0f,
 
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  552.00f / 1000.0f, 682.0f / 1000.0f,  // (u2, v2)
+        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  348.05f / 1000.0f, 682.0f / 1000.0f,  // (u3, v3)
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  348.05f / 1000.0f, 510.0f / 1000.0f,  // (u0, v0)
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  348.05f / 1000.0f, 510.0f / 1000.0f,  // (u0, v0)
+        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  552.00f / 1000.0f, 510.00f / 1000.0f, // (u1, v1)
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  552.00f / 1000.0f, 682.0f / 1000.0f,  // (u2, v2)
 
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  757.0f / 1000.0f, 682.0f / 1000.0f,
+         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  961.0f / 1000.0f, 682.0f / 1000.0f, // (u2, v2)
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  961.0f / 1000.0f, 510.00f / 1000.0f,  // (u0, v0)
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  961.0f / 1000.0f, 510.00f / 1000.0f,  // (u0, v0)
+         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  757.0f / 1000.0f, 510.00f / 1000.0f,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  757.0f / 1000.0f, 682.0f / 1000.0f,
 
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  552.00f / 1000.0f,295.0f / 1000.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  757.0f / 1000.0f, 295.0f / 1000.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  757.0f / 1000.0f, 510.00f / 1000.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  757.0f / 1000.0f, 510.00f / 1000.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  552.00f / 1000.0f, 510.00f / 1000.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  552.00f / 1000.0f, 295.0f / 1000.0f,
 
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  552.00f / 1000.0f, 682.0f / 1000.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  757.0f / 1000.0f, 682.0f / 1000.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  757.0f / 1000.0f, 847.0f / 1000.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  757.0f / 1000.0f, 847.0f / 1000.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  552.00f / 1000.0f, 847.0f / 1000.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  552.00f / 1000.0f, 682.0f / 1000.0f
     };
 
 //positions all containers
@@ -186,7 +235,7 @@ glm::vec3 cubePositions[] = {
 
  // load textures (we now use a utility function to keep the code more organized)
     // -----------------------------------------------------------------------------
-    unsigned int diffuseMap = loadTexture("textures/container2.png");
+    unsigned int diffuseMap = loadTexture("textures/Texture7.png");
 	unsigned int specularMap = loadTexture("textures/container2_specular.png");
 	
     // shader configuration
@@ -194,7 +243,7 @@ glm::vec3 cubePositions[] = {
     lightingShader.use(); 
     lightingShader.setInt("material.diffuse", 0);
     lightingShader.setInt("material.specular", 1);
-
+    int encenderFoco = 0;
  // render loop
  // -----------
  while (!glfwWindowShouldClose(window))
@@ -207,7 +256,7 @@ glm::vec3 cubePositions[] = {
 
      // input
      // -----
-     processInput(window);
+     processInput(window, encenderFoco);
 
      // render
      // ------
@@ -233,13 +282,19 @@ glm::vec3 cubePositions[] = {
         lightingShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
         lightingShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
         // point light 1
-        lightingShader.setVec3("pointLights[0].position", pointLightPositions[0]);
+
+       // model = glm::translate(model, glm::vec3(3.0f * sin(glfwGetTime()), 0.0f, 3.0f * cos(glfwGetTime())));
+
+        lightingShader.setVec3("pointLights[0].position", (pointLightPositions[0].r * (3.0f * sin(currentFrame))), 0.0f, (pointLightPositions[0].b * (3.0f * cos(currentFrame))));
         lightingShader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
         lightingShader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
         lightingShader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
         lightingShader.setFloat("pointLights[0].constant", 1.0f);
         lightingShader.setFloat("pointLights[0].linear", 0.09);
-        lightingShader.setFloat("pointLights[0].quadratic", 0.032);
+        lightingShader.setFloat("pointLights[0].quadratic", 0.32);
+        
+        /*
+        
         // point light 2
         lightingShader.setVec3("pointLights[1].position", pointLightPositions[1]);
         lightingShader.setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
@@ -264,18 +319,37 @@ glm::vec3 cubePositions[] = {
         lightingShader.setFloat("pointLights[3].constant", 1.0f);
         lightingShader.setFloat("pointLights[3].linear", 0.09);
         lightingShader.setFloat("pointLights[3].quadratic", 0.032);
+        */
+        
         // spotLight
-        lightingShader.setVec3("spotLight.position", camera.Position);
-        lightingShader.setVec3("spotLight.direction", camera.Front);
-        lightingShader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
-        lightingShader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
-        lightingShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
-        lightingShader.setFloat("spotLight.constant", 1.0f);
-        lightingShader.setFloat("spotLight.linear", 0.09);
-        lightingShader.setFloat("spotLight.quadratic", 0.032);
-        lightingShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
-        lightingShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
+        if (encenderFoco == 1) {
+            lightingShader.setVec3("spotLight.position", camera.Position);
+            lightingShader.setVec3("spotLight.direction", camera.Front);
+            lightingShader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+            lightingShader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+            lightingShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+            lightingShader.setFloat("spotLight.constant", 1.0f); // 1 = no hay atenuación constante
+            lightingShader.setFloat("spotLight.linear", 0.09); //Intensidad de luz se reduce con la distancia
+            lightingShader.setFloat("spotLight.quadratic", 0.032); //Intensidad de luz se reduce cuadratiacmente  con la distancia
+            lightingShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f))); //para hacer un circulo, angulo de corte interno
+            lightingShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f))); //para hacer un circulo angulo de corte externo
 
+        }
+        else {
+            lightingShader.setVec3("spotLight.position", camera.Position);
+            lightingShader.setVec3("spotLight.direction", camera.Front);
+            lightingShader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+            lightingShader.setVec3("spotLight.diffuse", 0.0f, 0.0f, 0.0f);
+            lightingShader.setVec3("spotLight.specular", 0.0f, 0.0f, 0.0f);
+            lightingShader.setFloat("spotLight.constant", 1.0f); // 1 = no hay atenuación constante
+            lightingShader.setFloat("spotLight.linear", 0.09); //Intensidad de luz se reduce con la distancia
+            lightingShader.setFloat("spotLight.quadratic", 0.032); //Intensidad de luz se reduce cuadratiacmente  con la distancia
+            lightingShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f))); //para hacer un circulo, angulo de corte interno
+            lightingShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f))); //para hacer un circulo angulo de corte externo
+        }
+                
+
+        
 
      // view/projection transformations
      glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -301,7 +375,7 @@ glm::vec3 cubePositions[] = {
 	 //Exercise 15 Task 1
 	 //render containers
 	 glBindVertexArray(cubeVAO);
-	 for (unsigned int i = 0; i < 10; i++){
+	 for (unsigned int i = 0; i < 3; i++){
 		//calculate the model matrix for each object and pass it to the shader before drawing
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, cubePositions[i]);
@@ -320,10 +394,12 @@ glm::vec3 cubePositions[] = {
     
          // we now draw as many light bulbs as we have point lights.
          glBindVertexArray(lightCubeVAO);
-         for (unsigned int i = 0; i < 4; i++)
+         for (unsigned int i = 0; i < 1; i++)
          {
              model = glm::mat4(1.0f);
              model = glm::translate(model, pointLightPositions[i]);
+             //model = glm::translate(model, glm::vec3(sin(glfwGetTime()), 0.0f, cos(glfwGetTime())));
+            model = glm::translate(model, glm::vec3(3.0f * sin(currentFrame), 0.0f, 3.0f * cos(currentFrame)));
              model = glm::scale(model, glm::vec3(0.2f)); // Make it a smaller cube
              lightCubeShader.setMat4("model", model);
              glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -350,11 +426,11 @@ glm::vec3 cubePositions[] = {
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window)
+static bool lastLState = false;
+void processInput(GLFWwindow* window, int& encenderFoco)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.ProcessKeyboard(FORWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -362,7 +438,21 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+        camera.ProcessKeyboard(RIGHT, deltaTime); 
+
+
+    // Verificar el estado actual de la tecla L
+    bool currentLState = glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS;
+
+    // Alternar el valor de encenderFoco solo si la tecla L fue presionada
+    if (currentLState && !lastLState) {
+        encenderFoco = (encenderFoco == 0) ? 1 : 0;
+    }
+
+    // Actualizar el estado anterior de la tecla L
+    lastLState = currentLState;
+
+    std::cout << "Boton linterna: " << encenderFoco << std::endl;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -407,6 +497,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 // ---------------------------------------------------
 unsigned int loadTexture(char const * path)
 {
+
+    stbi_set_flip_vertically_on_load(true); // Voltear la imagen verticalmente al cargar
     unsigned int textureID;
     glGenTextures(1, &textureID);
     
@@ -428,7 +520,7 @@ unsigned int loadTexture(char const * path)
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         stbi_image_free(data);
