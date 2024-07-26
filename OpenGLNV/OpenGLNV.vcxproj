@@ -133,16 +133,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\OpenGL_Stuff\Library\glad.c" />
-    <ClCompile Include="TareaB2T4_Valverde_Nick.cpp" />
+    <ClCompile Include="ProAnimacion\animacionProcedural.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\OpenGL_Stuff\incluide\learnopengl\camera.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\shader_exercise15t5_casters.fs" />
-    <None Include="shaders\shader_exercise15t5_casters.vs" />
-    <None Include="shaders\shader_exercise15_lightcube.fs" />
-    <None Include="shaders\shader_exercise15_lightcube.vs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\awesomeface.png" />
@@ -152,6 +146,12 @@
     <Image Include="textures\matrix.jpg" />
     <Image Include="textures\Texture7.png" />
     <Image Include="textures\Texture7_specular.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ProAnimacion\shaders\fragmentShader_casters.fs" />
+    <None Include="ProAnimacion\shaders\shader_fs_lightcube.fs" />
+    <None Include="ProAnimacion\shaders\shader_vs_lightcube.vs" />
+    <None Include="ProAnimacion\shaders\vertexShader_casters.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
