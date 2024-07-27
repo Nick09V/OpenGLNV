@@ -21,7 +21,7 @@ Código único: 202120523*/
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void processInput(GLFWwindow *window, int& xOffset, float& avanzar, float& lados, float& salta, bool& isJumping);
+void processInput(GLFWwindow *window, int& xOffset, float& avanzar, float& lados,float& altura, float& salta, bool& isJumping, bool& colision);
 bool comprobarColision(glm::uvec3 vector1, glm::uvec3 vector2);
 
 unsigned int loadTexture(const char *path);
@@ -171,10 +171,10 @@ glm::vec3 cubePositions[] = {
 
 
 glm::vec3 posicionSuelo[] = {
-    glm::vec3(0.0f,  -3.5f,  1.0f),
-    glm::vec3(0.0f,  -3.5f,  2.0f),
-    glm::vec3(0.0f,  -3.5f,  4.0f),
-    glm::vec3(0.0f,  -3.5f,  3.0f),
+    glm::vec3(0.0f, -1.0f,  1.0f),
+    glm::vec3(0.0f, -1.0f,  2.0f),
+    glm::vec3(0.0f, -1.0f,  4.0f),
+    glm::vec3(0.0f, -1.0f,  3.0f),
 };                      
 
 //Exercise 15 Task 5
@@ -229,6 +229,8 @@ glm::vec3 posicionSuelo[] = {
 	float lados = 0.0f;
 	float salta = 0.0f;
 	bool isJumping = false;
+	float altura = 0.0f;
+	bool colision = false;
     //static float gravedad = 9.8f;
  // render loop
  // -----------
@@ -241,7 +243,7 @@ glm::vec3 posicionSuelo[] = {
      lastFrame = currentFrame;
 
      // input
-     processInput(window, encenderFoco, avanzar, lados, salta, isJumping);
+     processInput(window, encenderFoco, avanzar, lados, altura, salta, isJumping, colision);
 
      // render
      glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -396,28 +398,16 @@ glm::vec3 posicionSuelo[] = {
      for (unsigned int i = 0; i < 1; i++) {
          glm::mat4 model = glm::mat4(1.0f);
         // std::cout << "Front: " << camera.Front.x << " " << camera.Front.y << " "  <<camera.Front.z <<"| Lados: " << camera.Position.x<< " Avanzar " << camera.Position.z << std::endl;
-        
-
-         if (isJumping)
-         {
-             
-                 model = glm::translate(model, glm::vec3(lados, salta, avanzar));
-             
-         }
-         else
-         {
-             model = glm::translate(model, glm::vec3(lados, 0.0f, avanzar));
-         }
-         
-         
-                   
-         
-            
+           model = glm::translate(model, glm::vec3(lados, salta, avanzar));
            
-           model = glm::translate(model, camera.Position + glm::vec3((camera.Front.x * 3.0f), camera.Front.y * 3.0f, (camera.Front.z * 3.0f)));
-		   
+           model = glm::translate(model, glm::vec3(camera.Position.x + (camera.Front.x * 3.0f), altura, camera.Position.z + (camera.Front.z * 3.0f)));
+           //glm::vec3 cameraMovement = glm::vec3(camera.Front.x * avanzar, salta, camera.Front.z * avanzar);
+           //model = glm::translate(model, cameraMovement); 
+           if (posicionSuelo[0].y)
+           {
 
-
+           }
+         
 		 model = glm::rotate(model, glm::radians(-camera.Yaw), glm::vec3(0.0f, 1.0f, 0.0f));
          lightingShader.setMat4("model", model);
 		 glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -482,10 +472,25 @@ static float gravedad = 9.8f;
 static float tiempo = 1.0f;
 static bool lastLState = false;
 static //bool isJumping = false;
-void processInput(GLFWwindow* window, int& encenderFoco, float& avanzar, float& lados, float& salta, bool& isJumping)
-{
+void processInput(GLFWwindow* window, int& encenderFoco, float& avanzar, float& lados,float& altura, float& salta, bool& isJumping, bool& colision)
+{   
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+
+    if (colision)
+    {
+        tiempo = 0.0f; // reinicia el tiempo al comenzar el salto
+    }
+
+    if (colision) {
+        tiempo += deltaTime; // deltaTime es el tiempo transcurrido desde el último fotograma
+        altura = 0.0f * tiempo - (0.5f * gravedad * (tiempo * tiempo));
+
+        if (altura <= -1.0f) {
+            altura = -1.0f;
+            isJumping = false;
+        }
+    }
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         camera.ProcessKeyboard(FORWARD, deltaTime);
@@ -508,29 +513,20 @@ void processInput(GLFWwindow* window, int& encenderFoco, float& avanzar, float& 
     }
 
 
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        float nuevaAltura = 7.0f * tiempo - ((0.5f * gravedad * (tiempo * tiempo)));
-        if (salta < nuevaAltura && !isJumping)
-        {
-            salta = salta + 0.001;
-            isJumping = true;
-        }
-        else {
-			if (salta > 0.1f)
-            {
-				salta = salta - 0.001;
-			}
-            else
-            {
-				isJumping = false;
-			}
-        }
-		//salta = 2.0f;
-        
-        std::cout << "Salto de: " << salta << "| Esta saltando: " << isJumping << std::endl;
-        
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !isJumping) {
+        isJumping = true;
+        tiempo = 0.0f; // reinicia el tiempo al comenzar el salto
     }
 
+    if (isJumping) {
+        tiempo += deltaTime; // deltaTime es el tiempo transcurrido desde el último fotograma
+        salta = 5.0f * tiempo - (0.5f * gravedad * (tiempo * tiempo));
+
+        if (salta <= 0.0f) {
+            salta = 0.0f;
+            isJumping = false;
+        }
+    }
 
     // Verificar el estado actual de la tecla L
     bool currentLState = glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS;
