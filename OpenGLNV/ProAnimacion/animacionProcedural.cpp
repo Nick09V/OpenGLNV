@@ -21,7 +21,7 @@ Código único: 202120523*/
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void processInput(GLFWwindow *window, int& xOffset, float& avanzar, float& lados,float& altura, float& salta, bool& isJumping, bool& colision);
+void processInput(GLFWwindow *window, int& xOffset, float& avanzar, float& lados,float& altura, float& salta, bool& isJumping, bool& colision, float& suelo);
 bool comprobarColision(glm::uvec3 vector1, glm::uvec3 vector2);
 
 unsigned int loadTexture(const char *path);
@@ -171,7 +171,7 @@ glm::vec3 cubePositions[] = {
 
 
 glm::vec3 posicionSuelo[] = {
-    glm::vec3(0.0f, -1.0f,  1.0f),
+    glm::vec3(0.0f, -5.0f,  1.0f),
     glm::vec3(0.0f, -1.0f,  2.0f),
     glm::vec3(0.0f, -1.0f,  4.0f),
     glm::vec3(0.0f, -1.0f,  3.0f),
@@ -243,7 +243,7 @@ glm::vec3 posicionSuelo[] = {
      lastFrame = currentFrame;
 
      // input
-     processInput(window, encenderFoco, avanzar, lados, altura, salta, isJumping, colision);
+     processInput(window, encenderFoco, avanzar, lados, altura, salta, isJumping, colision, posicionSuelo[0].y);
 
      // render
      glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -387,7 +387,7 @@ glm::vec3 posicionSuelo[] = {
          model = glm::translate(model, posicionSuelo[i]);
          //float angle = 20.0f * i;
          //model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-		 model = glm::scale(model, glm::vec3(5.0f, 0.5f, 5.0f));
+		 model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f));
          lightingShader.setMat4("model", model);
          glDrawArrays(GL_TRIANGLES, 36, 6);
 
@@ -403,10 +403,7 @@ glm::vec3 posicionSuelo[] = {
            model = glm::translate(model, glm::vec3(camera.Position.x + (camera.Front.x * 3.0f), altura, camera.Position.z + (camera.Front.z * 3.0f)));
            //glm::vec3 cameraMovement = glm::vec3(camera.Front.x * avanzar, salta, camera.Front.z * avanzar);
            //model = glm::translate(model, cameraMovement); 
-           if (posicionSuelo[0].y == altura)
-           {
-               colision = true;
-           }
+           
          
 		 model = glm::rotate(model, glm::radians(-camera.Yaw), glm::vec3(0.0f, 1.0f, 0.0f));
          lightingShader.setMat4("model", model);
@@ -468,17 +465,33 @@ bool comprobarColision(glm::uvec3 vector1, glm::uvec3 vector2) {
     
     
 }
+
+// Función para actualizar el estado vertical del objeto
+void actualizarMovimientoVertical(bool& enMovimiento, float& posicionVertical, float& tiempo, float velocidadInicial, float gravedad) {
+    if (enMovimiento) {
+        tiempo += deltaTime; // deltaTime es el tiempo transcurrido desde el último fotograma
+        posicionVertical = velocidadInicial * tiempo - (0.5f * gravedad * (tiempo * tiempo));
+
+        if (posicionVertical <= 0.0f) { // Suponiendo que 0.0f es la posición del suelo
+            posicionVertical = 0.0f;
+            enMovimiento = false;
+        }
+    }
+}
+
+
 static float gravedad = 9.8f;
 static float tiempo = 1.0f;
 static bool lastLState = false;
-static //bool isJumping = false;
-void processInput(GLFWwindow* window, int& encenderFoco, float& avanzar, float& lados,float& altura, float& salta, bool& isJumping, bool& colision)
+static bool isJumping = false;
+void processInput(GLFWwindow* window, int& encenderFoco, float& avanzar, float& lados,float& altura, float& salta, bool& isJumping, bool& colision, float& suelo)
 {   
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    if (colision || glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+    if ( glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
     {
+        colision = true;
         tiempo = 0.0f; // reinicia el tiempo al comenzar el salto
     }
 
@@ -486,11 +499,16 @@ void processInput(GLFWwindow* window, int& encenderFoco, float& avanzar, float& 
         tiempo += deltaTime; // deltaTime es el tiempo transcurrido desde el último fotograma
         altura = 0.0f * tiempo - (0.5f * gravedad * (tiempo * tiempo));
 
-        if (altura <= -1.0f) {
-            altura = -1.0f;
+        if (altura <= -5.0f) {
+            altura = -5.0f;
             colision = false;
         }
     }
+
+    // Actualizar el estado vertical del objeto
+    actualizarMovimientoVertical(isJumping, salta, tiempo, 5.0f, gravedad); // Salto
+    actualizarMovimientoVertical(colision, altura, tiempo, 0.0f, gravedad); // Caída
+
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         camera.ProcessKeyboard(FORWARD, deltaTime);
