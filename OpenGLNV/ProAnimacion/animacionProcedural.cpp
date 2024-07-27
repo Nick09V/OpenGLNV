@@ -403,9 +403,9 @@ glm::vec3 posicionSuelo[] = {
            model = glm::translate(model, glm::vec3(camera.Position.x + (camera.Front.x * 3.0f), altura, camera.Position.z + (camera.Front.z * 3.0f)));
            //glm::vec3 cameraMovement = glm::vec3(camera.Front.x * avanzar, salta, camera.Front.z * avanzar);
            //model = glm::translate(model, cameraMovement); 
-           if (posicionSuelo[0].y)
+           if (posicionSuelo[0].y == altura)
            {
-
+               colision = true;
            }
          
 		 model = glm::rotate(model, glm::radians(-camera.Yaw), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -477,18 +477,18 @@ void processInput(GLFWwindow* window, int& encenderFoco, float& avanzar, float& 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    if (colision)
+    if (colision || glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
     {
         tiempo = 0.0f; // reinicia el tiempo al comenzar el salto
     }
 
-    if (colision) {
+    if (colision ) {
         tiempo += deltaTime; // deltaTime es el tiempo transcurrido desde el último fotograma
         altura = 0.0f * tiempo - (0.5f * gravedad * (tiempo * tiempo));
 
         if (altura <= -1.0f) {
             altura = -1.0f;
-            isJumping = false;
+            colision = false;
         }
     }
 
