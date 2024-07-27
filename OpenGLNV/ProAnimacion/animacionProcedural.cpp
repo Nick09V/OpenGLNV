@@ -21,8 +21,8 @@ Código único: 202120523*/
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void processInput(GLFWwindow *window, int& xOffset);
-
+void processInput(GLFWwindow *window, int& xOffset, float& avanzar, float& lados, float& salta, bool& isJumping);
+bool comprobarColision(glm::uvec3 vector1, glm::uvec3 vector2);
 
 unsigned int loadTexture(const char *path);
 
@@ -138,60 +138,27 @@ int main()
      0.5f,  0.5f,  0.5f,   0.0f,  1.0f,  0.0f,      757.0f / 1000.0f, 847.0f / 1000.0f,
      0.5f,  0.5f,  0.5f,   0.0f,  1.0f,  0.0f,      757.0f / 1000.0f, 847.0f / 1000.0f,
     -0.5f,  0.5f,  0.5f,   0.0f,  1.0f,  0.0f,      552.00f / 1000.0f, 847.0f / 1000.0f,
-    -0.5f,  0.5f, -0.5f,   0.0f,  1.0f,  0.0f,      552.00f / 1000.0f, 682.0f / 1000.0f
+    -0.5f,  0.5f, -0.5f,   0.0f,  1.0f,  0.0f,      552.00f / 1000.0f, 682.0f / 1000.0f,
+
+
+
+    -0.5f,  0.5f, -0.5f,   0.0f,  1.0f,  0.0f,      552.00f / 1000.0f, 682.0f / 1000.0f,
+     0.5f,  0.5f, -0.5f,   0.0f,  1.0f,  0.0f,      757.0f / 1000.0f, 682.0f / 1000.0f,
+     0.5f,  0.5f,  0.5f,   0.0f,  1.0f,  0.0f,      757.0f / 1000.0f, 847.0f / 1000.0f,
+     0.5f,  0.5f,  0.5f,   0.0f,  1.0f,  0.0f,      757.0f / 1000.0f, 847.0f / 1000.0f,
+    -0.5f,  0.5f,  0.5f,   0.0f,  1.0f,  0.0f,      552.00f / 1000.0f, 847.0f / 1000.0f,
+    -0.5f,  0.5f, -0.5f,   0.0f,  1.0f,  0.0f,      552.00f / 1000.0f, 682.0f / 1000.0f,
     };
                                
                                
- float vertices2[] = {
-        // positions          // normals           // texture coords
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  348.05f / 1000.0f, 510.0f / 1000.0f, // (u1, v0)
-         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  144.0f / 1000.0f, 510.0f / 1000.0f,  // (u0, v1)
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  144.0f / 1000.0f, 682.0f / 1000.0f,  // (u0, v2)
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  144.0f / 1000.0f, 682.0f / 1000.0f,  // (u0, v2)
-        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  348.05f / 1000.0f, 682.0f / 1000.0f, // (u1, v3)
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  348.05f / 1000.0f, 510.0f / 1000.0f,  // (u1, v0)
-
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  552.00f / 1000.0f, 510.00f / 1000.0f,
-         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  757.0f / 1000.0f, 510.00f / 1000.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  757.0f / 1000.0f, 682.0f / 1000.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  757.0f / 1000.0f, 682.0f / 1000.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  552.00f / 1000.0f, 682.0f / 1000.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  552.00f / 1000.0f, 510.00f / 1000.0f,
-
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  552.00f / 1000.0f, 682.0f / 1000.0f,  // (u2, v2)
-        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  348.05f / 1000.0f, 682.0f / 1000.0f,  // (u3, v3)
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  348.05f / 1000.0f, 510.0f / 1000.0f,  // (u0, v0)
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  348.05f / 1000.0f, 510.0f / 1000.0f,  // (u0, v0)
-        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  552.00f / 1000.0f, 510.00f / 1000.0f, // (u1, v1)
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  552.00f / 1000.0f, 682.0f / 1000.0f,  // (u2, v2)
-
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  757.0f / 1000.0f, 682.0f / 1000.0f,
-         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  961.0f / 1000.0f, 682.0f / 1000.0f, // (u2, v2)
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  961.0f / 1000.0f, 510.00f / 1000.0f,  // (u0, v0)
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  961.0f / 1000.0f, 510.00f / 1000.0f,  // (u0, v0)
-         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  757.0f / 1000.0f, 510.00f / 1000.0f,
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  757.0f / 1000.0f, 682.0f / 1000.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  552.00f / 1000.0f,295.0f / 1000.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  757.0f / 1000.0f, 295.0f / 1000.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  757.0f / 1000.0f, 510.00f / 1000.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  757.0f / 1000.0f, 510.00f / 1000.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  552.00f / 1000.0f, 510.00f / 1000.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  552.00f / 1000.0f, 295.0f / 1000.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  552.00f / 1000.0f, 682.0f / 1000.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  757.0f / 1000.0f, 682.0f / 1000.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  757.0f / 1000.0f, 847.0f / 1000.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  757.0f / 1000.0f, 847.0f / 1000.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  552.00f / 1000.0f, 847.0f / 1000.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  552.00f / 1000.0f, 682.0f / 1000.0f
-    };
+ 
 
 //positions all containers
 glm::vec3 cubePositions[] = {
-        glm::vec3( 0.0f,  0.0f,  0.0f),
-        glm::vec3( 2.0f,  5.0f, -15.0f),
+
         glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3( 2.0f,  5.0f, -15.0f),
+        glm::vec3( 0.0f,  0.0f,  0.0f),
         glm::vec3(-3.8f, -2.0f, -12.3f),
         glm::vec3( 2.4f, -0.4f, -3.5f),
         glm::vec3(-1.7f,  3.0f, -7.5f),
@@ -200,6 +167,15 @@ glm::vec3 cubePositions[] = {
         glm::vec3( 1.5f,  0.2f, -1.5f),
         glm::vec3(-1.3f,  1.0f, -1.5f)
     };
+
+
+
+glm::vec3 posicionSuelo[] = {
+    glm::vec3(0.0f,  -3.5f,  1.0f),
+    glm::vec3(0.0f,  -3.5f,  2.0f),
+    glm::vec3(0.0f,  -3.5f,  4.0f),
+    glm::vec3(0.0f,  -3.5f,  3.0f),
+};                      
 
 //Exercise 15 Task 5
 // positions of the point lights
@@ -249,6 +225,11 @@ glm::vec3 cubePositions[] = {
     lightingShader.setInt("material.diffuse", 0);
     lightingShader.setInt("material.specular", 1);
     int encenderFoco = 0;
+    float avanzar = -1.0f;
+	float lados = 0.0f;
+	float salta = 0.0f;
+	bool isJumping = false;
+    //static float gravedad = 9.8f;
  // render loop
  // -----------
  while (!glfwWindowShouldClose(window))
@@ -260,11 +241,9 @@ glm::vec3 cubePositions[] = {
      lastFrame = currentFrame;
 
      // input
-     // -----
-     processInput(window, encenderFoco);
+     processInput(window, encenderFoco, avanzar, lados, salta, isJumping);
 
      // render
-     // ------
      glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -380,16 +359,71 @@ glm::vec3 cubePositions[] = {
 	 //Exercise 15 Task 1
 	 //render containers
 	 glBindVertexArray(cubeVAO);
-	 for (unsigned int i = 0; i < 3; i++){
+	 for (unsigned int i = 0; i < 0; i++){
 		//calculate the model matrix for each object and pass it to the shader before drawing
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, cubePositions[i]);
+         glm::mat4 model = glm::mat4(1.0f);
+         if (comprobarColision(cubePositions[i], posicionSuelo[0])) {
+
+         }
+         else {
+             
+         }
+         model = glm::translate(model, cubePositions[i]);
+		
 		float angle = 20.0f * i; 
 		model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 		lightingShader.setMat4("model", model);
 		
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	 }
+
+
+     //suelo
+     for (unsigned int i = 0; i < 1; i++) {
+
+         glm::mat4 model = glm::mat4(1.0f);
+         model = glm::translate(model, posicionSuelo[i]);
+         //float angle = 20.0f * i;
+         //model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+		 model = glm::scale(model, glm::vec3(5.0f, 0.5f, 5.0f));
+         lightingShader.setMat4("model", model);
+         glDrawArrays(GL_TRIANGLES, 36, 6);
+
+     }
+
+
+     //PERSONAJE
+     for (unsigned int i = 0; i < 1; i++) {
+         glm::mat4 model = glm::mat4(1.0f);
+        // std::cout << "Front: " << camera.Front.x << " " << camera.Front.y << " "  <<camera.Front.z <<"| Lados: " << camera.Position.x<< " Avanzar " << camera.Position.z << std::endl;
+        
+
+         if (isJumping)
+         {
+             
+                 model = glm::translate(model, glm::vec3(lados, salta, avanzar));
+             
+         }
+         else
+         {
+             model = glm::translate(model, glm::vec3(lados, 0.0f, avanzar));
+         }
+         
+         
+                   
+         
+            
+           
+           model = glm::translate(model, camera.Position + glm::vec3((camera.Front.x * 3.0f), camera.Front.y * 3.0f, (camera.Front.z * 3.0f)));
+		   
+
+
+		 model = glm::rotate(model, glm::radians(-camera.Yaw), glm::vec3(0.0f, 1.0f, 0.0f));
+         lightingShader.setMat4("model", model);
+		 glDrawArrays(GL_TRIANGLES, 0, 36);
+        
+            //std::cout << "X = " << lados << ", Y = 0.0f, Z = " << avanzar << std::endl;
+     }
 
 	 //Exercise 15 Task 5
          // also draw the lamp object(s)
@@ -431,19 +465,71 @@ glm::vec3 cubePositions[] = {
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
+
+bool comprobarColision(glm::uvec3 vector1, glm::uvec3 vector2) {
+    if (vector1.g == vector2.g)
+    {
+        return true;
+    }
+    else
+    {
+		return false;
+    }
+    
+    
+}
+static float gravedad = 9.8f;
+static float tiempo = 1.0f;
 static bool lastLState = false;
-void processInput(GLFWwindow* window, int& encenderFoco)
+static //bool isJumping = false;
+void processInput(GLFWwindow* window, int& encenderFoco, float& avanzar, float& lados, float& salta, bool& isJumping)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         camera.ProcessKeyboard(FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        avanzar -= camera.Front.x * deltaTime; // Incrementar avanzar cuando se presiona W
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
         camera.ProcessKeyboard(BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        avanzar += camera.Front.x * deltaTime; // Decrementar avanzar cuando se presiona S
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
         camera.ProcessKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime); 
+        lados -= camera.Right.z * deltaTime; // Decrementar lados cuando se presiona A
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        camera.ProcessKeyboard(RIGHT, deltaTime);
+        lados += camera.Right.z * deltaTime; // Incrementar lados cuando se presiona D
+    }
+
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        float nuevaAltura = 7.0f * tiempo - ((0.5f * gravedad * (tiempo * tiempo)));
+        if (salta < nuevaAltura && !isJumping)
+        {
+            salta = salta + 0.001;
+            isJumping = true;
+        }
+        else {
+			if (salta > 0.1f)
+            {
+				salta = salta - 0.001;
+			}
+            else
+            {
+				isJumping = false;
+			}
+        }
+		//salta = 2.0f;
+        
+        std::cout << "Salto de: " << salta << "| Esta saltando: " << isJumping << std::endl;
+        
+    }
 
 
     // Verificar el estado actual de la tecla L
@@ -457,7 +543,7 @@ void processInput(GLFWwindow* window, int& encenderFoco)
     // Actualizar el estado anterior de la tecla L
     lastLState = currentLState;
 
-    std::cout << "Boton linterna: " << encenderFoco << std::endl;
+    //std::cout << avanzar << " X: " << lados << std::endl;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -472,6 +558,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
+// Variable global para almacenar la rotación de la cámara en el eje Y
+
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
     if (firstMouse)
