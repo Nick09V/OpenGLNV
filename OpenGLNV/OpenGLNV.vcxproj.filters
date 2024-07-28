@@ -27,7 +27,7 @@
     <ClCompile Include="..\OpenGL_Stuff\Library\glad.c">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="ProAnimacion\animacionProcedural.cpp">
+    <ClCompile Include="D:\Educacion\Quinto Semestre\Git\java\animacionPro\animacionProcedural.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>

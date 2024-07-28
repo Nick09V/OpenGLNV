@@ -133,7 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\OpenGL_Stuff\Library\glad.c" />
-    <ClCompile Include="ProAnimacion\animacionProcedural.cpp" />
+    <ClCompile Include="D:\Educacion\Quinto Semestre\Git\java\animacionPro\animacionProcedural.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\OpenGL_Stuff\incluide\learnopengl\camera.h" />
