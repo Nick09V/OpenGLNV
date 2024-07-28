@@ -171,7 +171,7 @@ glm::vec3 cubePositions[] = {
 
 
 glm::vec3 posicionSuelo[] = {
-    glm::vec3(0.0f, -5.0f,  1.0f),
+    glm::vec3(0.0f, 0.0f,  1.0f),
     glm::vec3(0.0f, -1.0f,  2.0f),
     glm::vec3(0.0f, -1.0f,  4.0f),
     glm::vec3(0.0f, -1.0f,  3.0f),
@@ -229,7 +229,7 @@ glm::vec3 posicionSuelo[] = {
 	float lados = 0.0f;
 	float salta = 0.0f;
 	bool isJumping = false;
-	float altura = 0.0f;
+	float altura = 5.0f;
 	bool colision = false;
     //static float gravedad = 9.8f;
  // render loop
@@ -399,10 +399,8 @@ glm::vec3 posicionSuelo[] = {
          glm::mat4 model = glm::mat4(1.0f);
         // std::cout << "Front: " << camera.Front.x << " " << camera.Front.y << " "  <<camera.Front.z <<"| Lados: " << camera.Position.x<< " Avanzar " << camera.Position.z << std::endl;
            model = glm::translate(model, glm::vec3(lados, salta, avanzar));
-           
+		   
            model = glm::translate(model, glm::vec3(camera.Position.x + (camera.Front.x * 3.0f), altura, camera.Position.z + (camera.Front.z * 3.0f)));
-           //glm::vec3 cameraMovement = glm::vec3(camera.Front.x * avanzar, salta, camera.Front.z * avanzar);
-           //model = glm::translate(model, cameraMovement); 
            
          
 		 model = glm::rotate(model, glm::radians(-camera.Yaw), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -467,13 +465,13 @@ bool comprobarColision(glm::uvec3 vector1, glm::uvec3 vector2) {
 }
 
 // Función para actualizar el estado vertical del objeto
-void actualizarMovimientoVertical(bool& enMovimiento, float& posicionVertical, float& tiempo, float velocidadInicial, float gravedad) {
+void actualizarMovimientoVertical(bool& enMovimiento, float& posicionVertical, float& tiempo, float velocidadInicial, float gravedad, float suelo) {
     if (enMovimiento) {
         tiempo += deltaTime; // deltaTime es el tiempo transcurrido desde el último fotograma
         posicionVertical = velocidadInicial * tiempo - (0.5f * gravedad * (tiempo * tiempo));
 
-        if (posicionVertical <= 0.0f) { // Suponiendo que 0.0f es la posición del suelo
-            posicionVertical = 0.0f;
+        if (posicionVertical <=suelo) { // Suelo es la posición del suelo
+            posicionVertical = suelo;
             enMovimiento = false;
         }
     }
@@ -481,7 +479,7 @@ void actualizarMovimientoVertical(bool& enMovimiento, float& posicionVertical, f
 
 
 static float gravedad = 9.8f;
-static float tiempo = 1.0f;
+static float tiempo = 0.0f;
 static bool lastLState = false;
 static bool isJumping = false;
 void processInput(GLFWwindow* window, int& encenderFoco, float& avanzar, float& lados,float& altura, float& salta, bool& isJumping, bool& colision, float& suelo)
@@ -489,27 +487,26 @@ void processInput(GLFWwindow* window, int& encenderFoco, float& avanzar, float& 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
+
+    // Iniciar salto
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !isJumping) {
+        isJumping = true;
+        tiempo = 0.0f; // Reinicia el tiempo al comenzar el salto
+    }
+
+
     if ( glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
     {
         colision = true;
         tiempo = 0.0f; // reinicia el tiempo al comenzar el salto
     }
 
-    if (colision ) {
-        tiempo += deltaTime; // deltaTime es el tiempo transcurrido desde el último fotograma
-        altura = 0.0f * tiempo - (0.5f * gravedad * (tiempo * tiempo));
-
-        if (altura <= -5.0f) {
-            altura = -5.0f;
-            colision = false;
-        }
-    }
-
+   
     // Actualizar el estado vertical del objeto
-    actualizarMovimientoVertical(isJumping, salta, tiempo, 5.0f, gravedad); // Salto
-    actualizarMovimientoVertical(colision, altura, tiempo, 0.0f, gravedad); // Caída
+    actualizarMovimientoVertical(isJumping, salta, tiempo, 5.0f, gravedad, suelo); // Salto
+    actualizarMovimientoVertical(colision, altura, tiempo, 0.1f, gravedad, suelo); // Caída
 
-
+    std::cout << "salta: " << salta << " Altura: " << altura << std::endl;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         camera.ProcessKeyboard(FORWARD, deltaTime);
         avanzar -= camera.Front.x * deltaTime; // Incrementar avanzar cuando se presiona W
@@ -531,7 +528,7 @@ void processInput(GLFWwindow* window, int& encenderFoco, float& avanzar, float& 
     }
 
 
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !isJumping) {
+    /*if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !isJumping) {
         isJumping = true;
         tiempo = 0.0f; // reinicia el tiempo al comenzar el salto
     }
@@ -544,7 +541,7 @@ void processInput(GLFWwindow* window, int& encenderFoco, float& avanzar, float& 
             salta = 0.0f;
             isJumping = false;
         }
-    }
+    }*/
 
     // Verificar el estado actual de la tecla L
     bool currentLState = glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS;
